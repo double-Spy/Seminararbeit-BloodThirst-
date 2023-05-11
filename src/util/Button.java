@@ -26,13 +26,6 @@ public class Button {
 		initBounds();
 	}
 	
-	private void test() {
-		int a = 0;
-		int b = 7;
-		
-		int c = a-b;
-	}
-	
 	private void initBounds() {
 		bounds = new Rectangle2D.Float(x,y,width, height);
 	}
