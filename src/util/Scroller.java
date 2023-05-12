@@ -47,12 +47,6 @@ public class Scroller {
 		rightBorder=(int) (.4 * prefSize.getWidth());
 		upperBorder=(int) (.4 * prefSize.getHeight());
 		lowerBorder=(int) (.6 * prefSize.getHeight());
-		
-		System.out.println(leftBorder);
-		System.out.println(rightBorder);
-		System.out.println(upperBorder);
-		System.out.println(lowerBorder);
-
 	}
 	
 	public void update() {

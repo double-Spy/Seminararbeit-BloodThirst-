@@ -2,6 +2,7 @@ package entity;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 
 import gameState.Running;
 import main.GameMaster;
@@ -18,12 +19,16 @@ public class Bullet extends GameObject{
 	private Running master;
 	
 	public Bullet(Coordinate spawnPosition, Enemy zielGegner, Running master) {
-		super(new Coordinate(spawnPosition.getX(),spawnPosition.getY()), 10, 10);
+		super(new Rectangle(
+				(int) spawnPosition.getX(),
+				(int) spawnPosition.getY(),
+				2,
+				2));
 		this.master = master;
 		zielPosition=zielGegner.getCenter();
 		//movieng angle wid einemal definiert und dann wird sich nur noch in diese richtung Bewegt
-		super.setMovingAngle(Math.atan2((getObjectPosition().getY() - zielPosition.getY()),
-							(getObjectPosition().getX() - zielPosition.getX())));
+		super.setMovingAngle(Math.atan2((getHitBox().getY() - zielPosition.getY()),
+							(getHitBox().getX() - zielPosition.getX())));
 	}
 	
 	public void makeMove() {
@@ -34,17 +39,17 @@ public class Bullet extends GameObject{
 		
 		for (Enemy enemy : master.getEnemys())
 			
-			if (enemy.getHitBox().intersectsLine(getObjectPosition().getX(), getObjectPosition().getY(), getFutureposition().getX(),getFutureposition().getY())) {
+			if (enemy.getHitBox().intersectsLine(getHitBox().getX(), getHitBox().getY(), getFutureposition().getX(),getFutureposition().getY())) {
 				
 				enemy.getHit(master.getP().getDamage());
 				
 //				gameMaster.removePlayerShot(this);
 		}
 		
-		if (		getObjectPosition().getX()<0
-				||	getObjectPosition().getY()<0
-				||	getObjectPosition().getX()>master.getGameMaster().getMapSize().getWidth()
-				||	getObjectPosition().getY()>master.getGameMaster().getMapSize().getHeight()) {
+		if (		getHitBox().getX()<0
+				||	getHitBox().getY()<0
+				||	getHitBox().getX()>master.getGameMaster().getMapSize().getWidth()
+				||	getHitBox().getY()>master.getGameMaster().getMapSize().getHeight()) {
 			outOfBounds=true;
 		}
 	}
@@ -54,8 +59,8 @@ public class Bullet extends GameObject{
 		g.setColor(Color.BLACK);
 
 		g.fillOval(
-				(int)getObjectPosition().getX()-master.getScroller().getGame_offsetX(),
-				(int)getObjectPosition().getY()-master.getScroller().getGame_offsetY(),
+				(int)getHitBox().getX()-master.getScroller().getGame_offsetX(),
+				(int)getHitBox().getY()-master.getScroller().getGame_offsetY(),
 				7,
 				7);
 		

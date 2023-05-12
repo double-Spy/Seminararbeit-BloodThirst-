@@ -44,7 +44,7 @@ public class WaveHandler {
 	public void nextWave() {
 		
 		master.getEnemys().clear();
-		master.getP().setObjectPosition(new Coordinate(master.getGameMaster().getPrefSize().getWidth() / 2, master.getGameMaster().getPrefSize().getHeight() / 2));
+		master.getP().setPosition(new Coordinate(master.getGameMaster().getPrefSize().getWidth() / 2, master.getGameMaster().getPrefSize().getHeight() / 2));
 		
 		currentWave += 1;
 		
