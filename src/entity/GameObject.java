@@ -1,22 +1,18 @@
 package entity;
 
+import java.awt.geom.Rectangle2D;
+
 import util.Coordinate;
 
 public abstract class GameObject{
 	
-	private int width;
-	private int height;
+	private Rectangle2D hitBox;
 	private double movingAngle;   
 	private double movingDistance;
-	private Coordinate objectPosition;
 	
-	public GameObject (Coordinate objectPosition, int width, int height) {
-		this.objectPosition=objectPosition;
-		this.width=width;
-		this.height=height;
+	public GameObject (Rectangle2D hitBox) {
+		this.hitBox=hitBox;
 	}
-	
-	
 	
 	public static Coordinate polarToCartesianCoordinates(double angle) {
 		double x = Math.cos(angle);
@@ -28,55 +24,42 @@ public abstract class GameObject{
 	public void moveGameObject() {
 		Coordinate direction = polarToCartesianCoordinates(movingAngle);		
 		
-		objectPosition.setX(objectPosition.getX() + direction.getX()*movingDistance);		
-		objectPosition.setY(objectPosition.getY() + direction.getY()*movingDistance);
+//		objectPosition.setX(objectPosition.getX() + direction.getX()*movingDistance);		
+//		objectPosition.setY(objectPosition.getY() + direction.getY()*movingDistance);
+		
+		hitBox.setFrame(
+				hitBox.getX() + direction.getX()*movingDistance,
+				hitBox.getY() + direction.getY()*movingDistance,
+				hitBox.getWidth(),
+				hitBox.getHeight());
 		
 	}
 	
 	public Coordinate getFutureposition() {
 		Coordinate direction = polarToCartesianCoordinates(movingAngle);
 		
-		return new Coordinate((objectPosition.getX() + direction.getX()*movingDistance),(objectPosition.getY() + direction.getY()*movingDistance));
+		return new Coordinate((hitBox.getX() + direction.getX()*movingDistance),(hitBox.getY() + direction.getY()*movingDistance));
 	}
 	
 	public void makeMove() {
 		moveGameObject();
 	}
 	
-	public void scrollObject(int speedX, int speedY){
-		// GameObjects werden gescrollt
-		// Scrollen in X-Richtung erfolgt getrennt vom Scrollen in Y-Richtung
-		
-		objectPosition.setX(objectPosition.getX()+ speedX);
-		objectPosition.setY(objectPosition.getY()+ speedY);
-	}
-	
 	public abstract void paintMe(java.awt.Graphics g);
 	
+	public Coordinate getPosition() {
+		return new Coordinate(getHitBox().getX(),getHitBox().getY());
+	}
+	
+	public void setPosition(Coordinate newPosition) {
+		hitBox.setFrame(
+				newPosition.getX(),
+				newPosition.getY(),
+				hitBox.getWidth(),
+				hitBox.getHeight());
+	}
 	
 	//Getter Setter
-	public int getWidth() {
-		return width;
-	}
-
-
-
-	public void setWidth(int width) {
-		this.width = width;
-	}
-
-
-
-	public int getHeight() {
-		return height;
-	}
-
-
-
-	public void setHeight(int height) {
-		this.height = height;
-	}
-
 	public double getMovingAngle() {
 		return movingAngle;
 	}
@@ -93,12 +76,12 @@ public abstract class GameObject{
 		this.movingDistance = movingDistance;
 	}
 
-	public Coordinate getObjectPosition() {
-		return objectPosition;
+	public Rectangle2D getHitBox() {
+		return hitBox;
 	}
 
-	public void setObjectPosition(Coordinate objectPosition) {
-		this.objectPosition = objectPosition;
+	public void setHitBox(Rectangle2D hitBox) {
+		this.hitBox = hitBox;
 	}
 }
 

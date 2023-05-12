@@ -12,7 +12,7 @@ public class EnemySpawner {
 
 	private int wave;
 
-	private int difficulty = 10;
+	private int difficulty = 0;
 	
 	private int[] enemyCosts = new int[] {1, 3, 4, 7, 10};
 

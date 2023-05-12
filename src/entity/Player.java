@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
@@ -13,7 +14,6 @@ import util.*;
 
 public class Player extends GameObject {
 
-	private Rectangle2D hitBox;
 	private double damage; // mehr = besser
 	private double lives; // mehr= besser
 	private double maxLives; // mehr= besser
@@ -36,9 +36,13 @@ public class Player extends GameObject {
 	private boolean runningUpDown;
 	private boolean lastMove;
 
-	public Player(Coordinate objectPosition, int width, int height, double damage, double lives, Running master,
+	public Player(Coordinate spawnPosition, int width, int height, double damage, double lives, Running master,
 			double attackSpeed, double speed) {
-		super(objectPosition, width, height);
+		super(new Rectangle(
+				(int) spawnPosition.getX(),
+				(int) spawnPosition.getY(),
+				width,
+				height));
 
 		this.master = master;
 
@@ -61,47 +65,41 @@ public class Player extends GameObject {
 		standingImages = imageLoader.loadImages("res/Player/standing/", 15);
 
 		imageSpeed = 2;
-
-		hitBox = new Rectangle2D.Float((float) getObjectPosition().getX(), (float) getObjectPosition().getY(),
-				getWidth(), getHeight());
 	}
 
 	// Player Movement:
 
 	public void moveUp() {
 
-		if (getObjectPosition().getY() - getHeight() / 2 > 0) {// prüft ob der spieler außerhalb des spielfelds ist
-
-			getObjectPosition().setY(getObjectPosition().getY() - speed);// wenn nein dann move
-
-			hitBox.setFrame(getObjectPosition().getX(), getObjectPosition().getY(), getWidth(), getHeight());
+		if (getHitBox().getY() - getHitBox().getHeight() / 2 > 0) {// prüft ob der spieler außerhalb des spielfelds ist
+			setMovingAngle(Math.PI*1.5);
+			setMovingDistance(speed);
+			makeMove();
 		}
 	}
 
 	public void moveDown(double spielflaechenHoehe) {
-		if (getObjectPosition().getY() + getHeight() / 2 < spielflaechenHoehe) {// prüft ob der spieler außerhalb des
-																				// spielfelds ist
-			getObjectPosition().setY(getObjectPosition().getY() + speed); // wenn nein dann move
-
-			hitBox.setFrame(getObjectPosition().getX(), getObjectPosition().getY(), getWidth(), getHeight());
-		}
+		if (getHitBox().getY() + getHitBox().getHeight() / 2 < spielflaechenHoehe) {// prüft ob der spieler außerhalb des
+			setMovingAngle(Math.PI*0.5);
+			setMovingDistance(speed);
+			makeMove();	
+			}
 	}
 
 	public void moveRight(double spielflaechenbreite) {
-		if (getObjectPosition().getX() + getWidth() / 2 < spielflaechenbreite) {// prüft ob der spieler außerhalb des
-																				// spielfelds ist
-			getObjectPosition().setX(getObjectPosition().getX() + speed);// wenn nein dann move
-
-			hitBox.setFrame(getObjectPosition().getX(), getObjectPosition().getY(), getWidth(), getHeight());
-		}
+		if (getHitBox().getX() + getHitBox().getWidth() / 2 < spielflaechenbreite) {// prüft ob der spieler außerhalb des
+			setMovingAngle(Math.PI*0);
+			setMovingDistance(speed);
+			makeMove();		
+			}
 	}
 
 	public void moveLeft() {
-		if (getObjectPosition().getX() - getWidth() / 2 > 0) {// prüft ob der spieler außerhalb des spielfelds ist
-			getObjectPosition().setX(getObjectPosition().getX() - speed);// wenn nein dann move
-
-			hitBox.setFrame(getObjectPosition().getX(), getObjectPosition().getY(), getWidth(), getHeight());
-		}
+		if (getHitBox().getX() - getHitBox().getWidth() / 2 > 0) {// prüft ob der spieler außerhalb des spielfelds ist
+			setMovingAngle(Math.PI*1);
+			setMovingDistance(speed);
+			makeMove();		
+			}
 	}
 	// Player Movment ENDE
 
@@ -114,8 +112,8 @@ public class Player extends GameObject {
 			double distance = 99999999;
 			for (int i = 0; i < master.getEnemys().size(); i++) {
 				master.getEnemys().get(i).setEnemyColor(Color.RED);
-				if (distance > master.getEnemys().get(i).distance(this.getObjectPosition())) {
-					distance = master.getEnemys().get(i).distance(this.getObjectPosition());
+				if (distance > master.getEnemys().get(i).distance(new Coordinate(getHitBox().getX(),getHitBox().getY()))) {
+					distance = master.getEnemys().get(i).distance(new Coordinate(getHitBox().getX(),getHitBox().getY()));
 					nearestEnemy = master.getEnemys().get(i);
 				}
 			}
@@ -132,7 +130,7 @@ public class Player extends GameObject {
 	}
 
 	public void attackNearestEnemy(Enemy nearestEnemy) {
-		master.initPlayerShot(nearestEnemy, getObjectPosition());
+		master.initPlayerShot(nearestEnemy, new Coordinate(getHitBox().getX(),getHitBox().getY()));
 	}
 
 	@Override
@@ -157,8 +155,8 @@ public class Player extends GameObject {
 		if (runningLeft||(lastMove&&runningUpDown)) {
 			// abfolge für runningLeft zeichnen
 			g.drawImage(runLeftImages[currentImage], 
-					(int) getObjectPosition().getX() - (50) - master.getScroller().getGame_offsetX(),
-					(int) getObjectPosition().getY() - (75) - master.getScroller().getGame_offsetY(), 
+					(int) getHitBox().getX() - (50) - master.getScroller().getGame_offsetX(),
+					(int) getHitBox().getY() - (75) - master.getScroller().getGame_offsetY(), 
 					100, 150, null);
 
 			if (imageCounter == imageSpeed) {
@@ -170,8 +168,8 @@ public class Player extends GameObject {
 		} else if (runningRight||(!lastMove&&runningUpDown)) {
 			// abfolge für runningRight zeichnen
 			g.drawImage(runRightImages[currentImage], 
-					(int) getObjectPosition().getX() - (50) - master.getScroller().getGame_offsetX(),
-					(int) getObjectPosition().getY() - (75) - master.getScroller().getGame_offsetY(),
+					(int) getHitBox().getX() - (50) - master.getScroller().getGame_offsetX(),
+					(int) getHitBox().getY() - (75) - master.getScroller().getGame_offsetY(),
 					100, 150, null);
 
 			if (imageCounter == imageSpeed) {
@@ -183,8 +181,8 @@ public class Player extends GameObject {
 		} else
 			// abfolge für standing zeichnen
 			g.drawImage(standingImages[currentImage], 
-					(int) getObjectPosition().getX() - (50) - master.getScroller().getGame_offsetX(),
-					(int) getObjectPosition().getY() - (75) - master.getScroller().getGame_offsetY(),
+					(int) getHitBox().getX() - (50) - master.getScroller().getGame_offsetX(),
+					(int) getHitBox().getY() - (75) - master.getScroller().getGame_offsetY(),
 					100, 150, null);
 
 		if (imageCounter == imageSpeed) {
@@ -196,10 +194,10 @@ public class Player extends GameObject {
 
 		// zeichne Hitbox
 		g.drawRect(
-				(int) (hitBox.getMinX() - (hitBox.getWidth() / 2) - master.getScroller().getGame_offsetX()),
-				(int) (hitBox.getMinY() - (hitBox.getHeight() / 2) - master.getScroller().getGame_offsetY()),
-				(int) hitBox.getWidth(), 
-				(int) hitBox.getHeight());
+				(int) (getHitBox().getMinX() - (getHitBox().getWidth() / 2) - master.getScroller().getGame_offsetX()),
+				(int) (getHitBox().getMinY() - (getHitBox().getHeight() / 2) - master.getScroller().getGame_offsetY()),
+				(int) getHitBox().getWidth(), 
+				(int) getHitBox().getHeight());
 	}
 
 //	// scrollt das Objekt um die Scrollgeschwindigkeit in X- bzw. Y-Richtung
@@ -214,15 +212,6 @@ public class Player extends GameObject {
 //		}
 
 	// getter setter
-
-	public Rectangle2D getHitBox() {
-		return hitBox;
-	}
-
-	public void setHitBox(Rectangle2D hitBox) {
-		this.hitBox = hitBox;
-	}
-
 	public double getDamage() {
 		return damage;
 	}

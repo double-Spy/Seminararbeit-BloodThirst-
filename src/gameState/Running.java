@@ -6,6 +6,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -13,6 +14,7 @@ import Overlays.Store;
 import entity.*;
 import enums.Gamestate;
 import main.GameMaster;
+import main.Quadtree;
 
 public class Running {
 	
@@ -40,6 +42,7 @@ public class Running {
 	private WaveHandler waveHandler;
 
 	private CollisionDetector collisionDetector;
+	private Quadtree quadtree;
 
 	private boolean endWave;
 
@@ -73,6 +76,8 @@ public class Running {
 		store = new Store(this, gameMaster.getPrefSize());
 
 		enemys = new ArrayList<Enemy>();
+		
+		quadtree = new Quadtree(0, new Rectangle(0,0,(int)gameMaster.getMapSize().getWidth(),(int)gameMaster.getMapSize().getHeight()));
 
 		playerShots = new ArrayList<Bullet>();
 
@@ -114,9 +119,11 @@ public class Running {
 
 		// updates alle enemys
 		for (Enemy enemy : enemys) {
-			enemy.update(p.getObjectPosition());
-
+			enemy.update(p.getPosition());
+			quadtree.insert(enemy);
 		}
+		
+		
 		for (int i = 0; i < enemys.size(); i++) {
 			if (enemys.get(i).death) {
 				enemys.remove(i);
@@ -195,9 +202,6 @@ public class Running {
 				scroller.getUpperBorder(),
 				scroller.getLeftBorder()-scroller.getRightBorder(),
 				scroller.getLowerBorder()-scroller.getUpperBorder());
-		
-		System.out.println(scroller.getRightBorder()-scroller.getLeftBorder());
-
 	}
 
 	private void initPlayer() {

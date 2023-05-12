@@ -43,8 +43,8 @@ public class CollisionDetector {
 	//Methode zum Behandeln von Kollisionen zwischen Feinden
 	private void handleCollision(Enemy enemy1, Enemy enemy2) {
 		// Berechne den Winkel zwischen den Feinden
-		double angle = Math.atan2(enemy2.getObjectPosition().getY() - enemy1.getObjectPosition().getY(),
-				enemy2.getObjectPosition().getX() - enemy1.getObjectPosition().getX());
+		double angle = Math.atan2(enemy2.getPosition().getY() - enemy1.getPosition().getY(),
+				enemy2.getPosition().getX() - enemy1.getPosition().getX());
 		// Berechne die Distanz die die Feinde voneinander entfernt sein sollen
 		double distance = overlapingDistance(enemy1.getHitBox(),enemy2.getHitBox());
 		// Setze den Bewegungswinkel und die Distanz des ersten Feindes
@@ -66,8 +66,8 @@ public class CollisionDetector {
 	// Methode zum Behandeln von Kollisionen zwischen Feinden und spieler
 	private void handleCollision(Enemy enemy, Player player) {
 		// Berechne den Winkel zwischen dem Feind und dem Spieler
-		double angle = Math.atan2(player.getObjectPosition().getY() - enemy.getObjectPosition().getY(),
-				player.getObjectPosition().getX() - enemy.getObjectPosition().getX());
+		double angle = Math.atan2(player.getPosition().getY() - enemy.getPosition().getY(),
+				player.getPosition().getX() - enemy.getPosition().getX());
 		// Add 2π to the angle if it's negative
 //	    if (angle < 0) {
 //	        angle += 2 * Math.PI;
